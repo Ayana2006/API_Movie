@@ -3,9 +3,13 @@ from apps.posts.models import Category, Movie, Comment, Like, LikeComments
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    count_likes = serializers.SerializerMethodField()
     class Meta:
         model = Comment
-        fields = ('__all__')
+        fields = ('id', 'text', 'parent', 'from_user', 'to_post', 'count_likes',)
+        
+    def get_count_likes(self,obj):
+        return f'{obj.liked_comments.count()}'
 
 class LikeCommentsSerializer(serializers.ModelSerializer):
     class Meta:
@@ -47,10 +51,10 @@ class MovieSerializer(serializers.ModelSerializer):
     count_comments = serializers.SerializerMethodField()
     class Meta:
         model = Movie
-        fields = ('__all__')
+        fields = ('id', 'comments', 'poster', 'title', 'created', 'user', 'count_likes', 'count_comments', 'category')
         
     def get_count_likes(self,obj):
-        return f'{obj.liked_users.count()}'
+        return f'{obj.liked_posts.count()}'
     
     def get_count_comments(self,obj):
         return f"{obj.comments.count()}"
